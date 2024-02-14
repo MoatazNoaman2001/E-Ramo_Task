@@ -51,6 +51,23 @@ class PostDetailsFragment : Fragment() {
                     binding.body.text = res.data?.body
                     binding.title.text= "${res.data?.id}. ${res.data?.title}"
                 }
+
+                else -> {}
+            }
+
+            when (val res = viewModel.getPostDetailsGG(id)) {
+                is FetchResult.Failed -> {
+                    Log.d(TAG, "onViewCreated: error: ${res.Error}")
+                }
+                is FetchResult.Success -> {
+                    Log.d(TAG, "onViewCreated: post $id : ${res.data?.post}")
+                    Log.d(TAG, "onViewCreated: user : ${res.data?.user}")
+                    res.data?.comments?.forEachIndexed { index, remoteComment ->
+                        Log.d(TAG, "onViewCreated: comment $index: ${remoteComment.toString()}")
+                    }
+                }
+
+                else -> {}
             }
         }
     }

@@ -46,28 +46,32 @@ class PostListFragment : Fragment(), OnItemClicked {
         binding.postRecycleView.adapter = adapter
         controller = Navigation.findNavController(requireView())
 
-        CoroutineScope(lifecycleScope.coroutineContext).launch {
-            when (val res = postListViewModel.postList()) {
+        postListViewModel.launchPosts()
+        postListViewModel.uiPosts.observe(viewLifecycleOwner){
+            when (it) {
                 is FetchResult.Failed -> {
                     binding.loadingProgress.isVisible = false
                     binding.errorLayout.isVisible = true
-                    binding.errorTextView.text = res.Error
-                    Log.d(TAG, "onViewCreated: Error : ${res.Error}")
+                    binding.errorTextView.text = it.Error
+                    Log.d(TAG, "onViewCreated: Error : ${it.Error}")
                 }
 
                 is FetchResult.Success -> {
                     binding.loadingProgress.isVisible = false
                     binding.postRecycleView.isVisible = true
-                    res.data?.forEachIndexed { index, post ->
+                    it.data?.forEachIndexed { index, post ->
                         Log.d(
                             TAG,
                             "onViewCreated:$index: ${post.toString()}"
                         )
                     }
-                    adapter.submitList(res.data)
+                    adapter.submitList(it.data)
+                }
+
+                else -> {
+
                 }
             }
-
         }
     }
 
